@@ -21,23 +21,21 @@ public class OverlayService extends Service{
     final boolean[] enabled = {false};
     TextView b = txt("", 12, Color.WHITE);
     b.setGravity(Gravity.CENTER_VERTICAL);
-    b.setBackground(bg(P));
 
     Runnable refresh = () -> {
         b.setText("◉   " + s + "       " + (enabled[0] ? "ON" : "OFF"));
         b.setTextColor(enabled[0] ? Y : Color.WHITE);
         b.setBackground(bg(enabled[0] ? 0xff302800 : P));
-        b.setAlpha(1.0f);
     };
 
     refresh.run();
     content.addView(b, new LinearLayout.LayoutParams(-1, dp(44)));
-    b.setClickable(true);
     b.setOnClickListener(v -> {
         enabled[0] = !enabled[0];
         refresh.run();
     });
-});}
+}
+
  void action(String s){TextView b=txt("▶  "+s,12,Y);b.setBackground(bg(P));content.addView(b);b.setOnClickListener(v->Toast.makeText(this,s+" • demo saja",0).show());}
  void show(String s){content.removeAllViews();head(s);switch(s){
  case "License": info("Vendor","MIKAZE HUB");info("Access Key","MZK-••••-••••-8F21");info("Durasi Dipilih","30 Hari");info("Sisa Hari","--");info("Versi APK","1.0.0");break;
