@@ -15,27 +15,95 @@ public class OverlayService extends Service{
  lp=new WindowManager.LayoutParams(dp(340),dp(440),type,WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,PixelFormat.TRANSLUCENT);lp.gravity=Gravity.TOP|Gravity.CENTER_HORIZONTAL;lp.y=dp(60);
  title.setOnTouchListener(new View.OnTouchListener(){float x,y;int sx,sy;public boolean onTouch(View v,MotionEvent e){if(e.getAction()==0){x=e.getRawX();y=e.getRawY();sx=lp.x;sy=lp.y;return true;}if(e.getAction()==2){lp.x=sx+(int)(e.getRawX()-x);lp.y=sy+(int)(e.getRawY()-y);wm.updateViewLayout(root,lp);return true;}return true;}});
  min.setOnClickListener(v->{body.setVisibility(body.getVisibility()==View.GONE?View.VISIBLE:View.GONE);});close.setOnClickListener(v->stopSelf());wm.addView(root,lp);makeNav();show("License");}
- void makeNav(){nav.removeAllViews();String[] a={"License","Camera","Visual","ESP Config","Player","Teleport","Vehicle","Farm"};for(String s:a){TextView b=txt(s,11,s.equals(page)?Y:0xffb6bdca);b.setBackground(bg(s.equals(page)?0xff342b08:0xff0d0f12));nav.addView(b,new LinearLayout.LayoutParams(-1,dp(42)));b.setOnClickListener(v->{page=s;makeNav();show(s);});}}
- void head(String s){content.addView(txt(s.toUpperCase(),16,Y));content.addView(txt("MIKAZE DESKTOP • DEMO",10,0xff8e98a7));}
+ void makeNav(){
+    nav.removeAllViews();
+    String[] items = {
+        "License", "Camera", "Visual", "ESP Config",
+        "Player", "Teleport", "Vehicle", "Farm"
+    };
+
+    for (String item : items) {
+        final boolean active = item.equals(page);
+        TextView b = txt(
+            (active ? "▌  " : "   ") + item,
+            11,
+            active ? Y : 0xffb9c0cc
+        );
+        b.setGravity(Gravity.CENTER_VERTICAL);
+        b.setMinHeight(dp(44));
+        b.setBackground(bg(active ? 0xff292306 : 0xff0b0d10));
+
+        LinearLayout.LayoutParams params =
+            new LinearLayout.LayoutParams(-1, dp(44));
+        params.bottomMargin = dp(5);
+        nav.addView(b, params);
+
+        b.setOnClickListener(v -> {
+            page = item;
+            makeNav();
+            show(item);
+        });
+    }
+}
+ void head(String s){
+    TextView title = txt(s.toUpperCase(), 18, Y);
+    title.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+    title.setPadding(dp(4), dp(6), dp(4), dp(3));
+    content.addView(title);
+
+    TextView subtitle = txt(
+        "MIKAZE  /  CONTROL CENTER",
+        10,
+        0xff929baa
+    );
+    subtitle.setPadding(dp(4), 0, dp(4), dp(9));
+    content.addView(subtitle);
+
+    View line = new View(this);
+    line.setBackgroundColor(0xff514300);
+    LinearLayout.LayoutParams lineParams =
+        new LinearLayout.LayoutParams(-1, dp(1));
+    lineParams.bottomMargin = dp(10);
+    content.addView(line, lineParams);
+}
  void toggle(String s){
     final boolean[] enabled = {false};
-    TextView b = txt("", 12, Color.WHITE);
-    b.setGravity(Gravity.CENTER_VERTICAL);
+
+    LinearLayout row = new LinearLayout(this);
+    row.setOrientation(LinearLayout.HORIZONTAL);
+    row.setGravity(Gravity.CENTER_VERTICAL);
+    row.setPadding(dp(10), dp(5), dp(8), dp(5));
+    row.setBackground(bg(P));
+
+    TextView label = txt(s, 12, 0xffeeeeee);
+    label.setGravity(Gravity.CENTER_VERTICAL);
+    row.addView(label, new LinearLayout.LayoutParams(0, dp(42), 1));
+
+    TextView state = txt("OFF", 10, 0xffaab0bb);
+    state.setGravity(Gravity.CENTER);
+    state.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+    state.setBackground(bg(0xff252830));
+    row.addView(state, new LinearLayout.LayoutParams(dp(52), dp(30)));
 
     Runnable refresh = () -> {
-        b.setText("◉   " + s + "       " + (enabled[0] ? "ON" : "OFF"));
-        b.setTextColor(enabled[0] ? Y : Color.WHITE);
-        b.setBackground(bg(enabled[0] ? 0xff302800 : P));
+        state.setText(enabled[0] ? "ON" : "OFF");
+        state.setTextColor(enabled[0] ? 0xff090909 : 0xffaab0bb);
+        state.setBackground(bg(enabled[0] ? Y : 0xff252830));
+        row.setBackground(bg(enabled[0] ? 0xff211c05 : P));
     };
 
     refresh.run();
-    content.addView(b, new LinearLayout.LayoutParams(-1, dp(44)));
-    b.setOnClickListener(v -> {
+
+    LinearLayout.LayoutParams params =
+        new LinearLayout.LayoutParams(-1, dp(50));
+    params.bottomMargin = dp(7);
+    content.addView(row, params);
+
+    row.setOnClickListener(v -> {
         enabled[0] = !enabled[0];
         refresh.run();
     });
 }
-
  void action(String s){TextView b=txt("▶  "+s,12,Y);b.setBackground(bg(P));content.addView(b);b.setOnClickListener(v->Toast.makeText(this,s+" • demo saja",0).show());}
  void show(String s){content.removeAllViews();head(s);switch(s){
  case "License": info("Vendor","MIKAZE HUB");info("Access Key","MZK-••••-••••-8F21");info("Durasi Dipilih","30 Hari");info("Sisa Hari","--");info("Versi APK","1.0.0");break;
