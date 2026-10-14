@@ -17,7 +17,27 @@ public class OverlayService extends Service{
  min.setOnClickListener(v->{body.setVisibility(body.getVisibility()==View.GONE?View.VISIBLE:View.GONE);});close.setOnClickListener(v->stopSelf());wm.addView(root,lp);makeNav();show("License");}
  void makeNav(){nav.removeAllViews();String[] a={"License","Camera","Visual","ESP Config","Player","Teleport","Vehicle","Farm"};for(String s:a){TextView b=txt(s,11,s.equals(page)?Y:0xffb6bdca);b.setBackground(bg(s.equals(page)?0xff342b08:0xff0d0f12));nav.addView(b,new LinearLayout.LayoutParams(-1,dp(42)));b.setOnClickListener(v->{page=s;makeNav();show(s);});}}
  void head(String s){content.addView(txt(s.toUpperCase(),16,Y));content.addView(txt("MIKAZE DESKTOP • DEMO",10,0xff8e98a7));}
- void toggle(String s){TextView b=txt("◉   "+s+"       OFF",12,Color.WHITE);b.setBackground(bg(P));content.addView(b);b.setOnClickListener(v->{b.setText("◉   "+s+"       ON");b.setTextColor(Y);});}
+ void toggle(String s){
+    final boolean[] enabled = {false};
+    TextView b = txt("", 12, Color.WHITE);
+    b.setGravity(Gravity.CENTER_VERTICAL);
+    b.setBackground(bg(P));
+
+    Runnable refresh = () -> {
+        b.setText("◉   " + s + "       " + (enabled[0] ? "ON" : "OFF"));
+        b.setTextColor(enabled[0] ? Y : Color.WHITE);
+        b.setBackground(bg(enabled[0] ? 0xff302800 : P));
+        b.setAlpha(1.0f);
+    };
+
+    refresh.run();
+    content.addView(b, new LinearLayout.LayoutParams(-1, dp(44)));
+    b.setClickable(true);
+    b.setOnClickListener(v -> {
+        enabled[0] = !enabled[0];
+        refresh.run();
+    });
+});}
  void action(String s){TextView b=txt("▶  "+s,12,Y);b.setBackground(bg(P));content.addView(b);b.setOnClickListener(v->Toast.makeText(this,s+" • demo saja",0).show());}
  void show(String s){content.removeAllViews();head(s);switch(s){
  case "License": info("Vendor","MIKAZE HUB");info("Access Key","MZK-••••-••••-8F21");info("Durasi Dipilih","30 Hari");info("Sisa Hari","--");info("Versi APK","1.0.0");break;
